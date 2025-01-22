@@ -1,17 +1,22 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import './App.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 function App() {
   const [itemText, setItemText] = useState('');
   const [listItems, setListItems] = useState([]);
   const [isUpdating, setIsUpdating] = useState('');
   const [updateItemText, setUpdateItemText] = useState('');
-
+  const [complete,setComplete] = useState(false);
   //add new todo item to database
   const addItem = async (e) => {
     e.preventDefault();
     try{
+      if(itemText.length==0){
+        toast.error("input cannot be empty");
+        return;
+      }
       const res = await axios.post('http://localhost:5500/api/item', {item: itemText})
       setListItems(prev => [...prev, res.data]);
       setItemText('');
@@ -44,13 +49,16 @@ function App() {
       console.log(err);
     }
   }
-
   //Update item
   const updateItem = async (e) => {
     e.preventDefault()
     try{
+      if(updateItemText.length==0){
+        toast.error("input cannot be empty");
+        return;
+      }
       const res = await axios.put(`http://localhost:5500/api/item/${isUpdating}`, {item: updateItemText})
-      console.log(res.data)
+      
       const updatedItemIndex = listItems.findIndex(item => item._id === isUpdating);
       const updatedItem = listItems[updatedItemIndex].item = updateItemText;
       setUpdateItemText('');
@@ -77,12 +85,12 @@ function App() {
       <div className="todo-listItems">
         {
           listItems.map(item => (
-          <div className="todo-item">
+          <div className="todo-item" onClick={()=>{setComplete(!complete)}}>
             {
               isUpdating === item._id
               ? renderUpdateForm()
               : <>
-                  <p className="item-content">{item.item}</p>
+                  <p className={complete?"item-content cut":"item-content "} onClick={()=>{setComplete(!complete)}}>{item.item}</p>
                   <button className="update-item" onClick={()=>{setIsUpdating(item._id)}}>Update</button>
                   <button className="delete-item" onClick={()=>{deleteItem(item._id)}}>Delete</button>
                 </>
@@ -93,6 +101,7 @@ function App() {
         
 
       </div>
+      <ToastContainer />
     </div>
   );
 }
