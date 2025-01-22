@@ -85,12 +85,12 @@ function App() {
       <div className="todo-listItems">
         {
           listItems.map(item => (
-          <div className="todo-item" onClick={()=>{setComplete(!complete)}}>
+          <div className="todo-item">
             {
               isUpdating === item._id
               ? renderUpdateForm()
               : <>
-                  <p className={complete?"item-content cut":"item-content "} onClick={()=>{setComplete(!complete)}}>{item.item}</p>
+                  <p className="item-content">{item.item}</p>
                   <button className="update-item" onClick={()=>{setIsUpdating(item._id)}}>Update</button>
                   <button className="delete-item" onClick={()=>{deleteItem(item._id)}}>Delete</button>
                 </>
